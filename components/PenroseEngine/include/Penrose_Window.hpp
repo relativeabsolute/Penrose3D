@@ -21,7 +21,8 @@ namespace Penrose {
 
             void set_window_title(const std::string &new_title);
         private:
-
+            bool init_window_version(int major, int minor);
+            bool init_window();
             bool init_gl();
 
             SDL_Window *win;

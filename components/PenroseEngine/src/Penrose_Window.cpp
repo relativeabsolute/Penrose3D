@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "Penrose_Constants.hpp"
+
 using namespace Penrose;
 
 Window::Window() : Window(1024, 768) {
@@ -16,20 +18,42 @@ Window::~Window() {
     SDL_DestroyWindow(win);
 }
 
-bool Window::init() {
-    std::cout << "Attempting to set SDL gl attributes." << std::endl;
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-    std::cout << "SDL gl attributes set successfully." << std::endl;
+bool Window::init_window_version(int major, int minor) {
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
 
-    std::cout << "Attempting to create SDL gl window." << std::endl;
+    std::cout << "Attempting to create SDL gl window with OpenGL version "
+        << major << "." << minor << std::endl;
     win = SDL_CreateWindow("Penrose_Window", 0, 0, width, height,
             SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if (!win) {
-        std::cerr << "Error creating window: " << SDL_GetError() << std::endl;
+        std::cout << "Could not create SDL gl window with OpenGL version "
+            << major << "." << minor << std::endl;
         return false;
     }
     std::cout << "SDL gl window created successfully." << std::endl;
+
+    return true;
+}
+
+bool Window::init_window() {
+    for (int major = GL_MAX_VERSION_MAJOR; major >= GL_MIN_VERSION_MAJOR; major--) {
+        for (int minor = GL_MAX_VERSION_MINOR; minor >= GL_MIN_VERSION_MINOR; minor--) {
+            if (init_window_version(major, minor)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool Window::init() {
+
+    if (!init_window()) {
+        std::cerr << "Minimum required OpenGL version " << GL_MIN_VERSION_MAJOR
+            << "." << GL_MIN_VERSION_MINOR << " not supported on this system." << std::endl;
+        return false;
+    }
 
     return init_gl();
 }
