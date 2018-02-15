@@ -32,6 +32,15 @@ bool Window::init_window_version(int major, int minor) {
         return false;
     }
     std::cout << "SDL gl window created successfully." << std::endl;
+    std::cout << "Attempting to create SDL gl context." << std::endl;
+    gl_context = SDL_GL_CreateContext(win);
+    if (!gl_context) {
+        std::cerr << "Error creating opengl context: " << SDL_GetError() << std::endl;
+        SDL_DestroyWindow(win);
+        return false;
+    }
+    std::cout << "SDL gl context created successfully." << std::endl;
+
 
     return true;
 }
@@ -59,14 +68,6 @@ bool Window::init() {
 }
 
 bool Window::init_gl() {
-    std::cout << "Attempting to create SDL gl context." << std::endl;
-    gl_context = SDL_GL_CreateContext(win);
-    if (!gl_context) {
-        std::cerr << "Error creating opengl context: " << SDL_GetError() << std::endl;
-        return false;
-    }
-    std::cout << "SDL gl context created successfully." << std::endl;
-
     std::cout << "Attempting to initialize GLEW." << std::endl;
     glewExperimental = GL_TRUE;
     GLenum glew_error = glewInit();
