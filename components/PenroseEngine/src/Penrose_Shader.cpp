@@ -38,3 +38,11 @@ std::unique_ptr<Shader> Shader::load_from_file(const std::string &file_name, GLe
     result->shader_id = shader_id;
     return result;
 }
+
+GLenum Shader::getShaderType() const {
+    return shader_type;
+}
+
+GLuint Shader::getShaderID() const {
+    return shader_id;
+}
